@@ -37,8 +37,16 @@ const Spotlight = ({ className, items, sentinelRef }: Props) => {
     const swipeStart = useRef<number | null>(null);
     const stopped = paused || isMobile || !routeActive;
 
-    const onPointerDown = (event: React.PointerEvent) => {
-        swipeStart.current = event.pointerType === 'touch' ? event.clientX : null;
+    const onPointerDown = (event: React.PointerEvent<HTMLElement>) => {
+        const target = event.target as HTMLElement;
+        const interactive = target.closest('a, button, input, textarea, select, [role="button"], [role="tab"]');
+        if (event.pointerType !== 'touch' || interactive !== null) {
+            swipeStart.current = null;
+            return;
+        }
+
+        swipeStart.current = event.clientX;
+        event.currentTarget.setPointerCapture(event.pointerId);
     };
     const onPointerUp = (event: React.PointerEvent) => {
         if (swipeStart.current === null) {
@@ -59,7 +67,10 @@ const Spotlight = ({ className, items, sentinelRef }: Props) => {
 
     const onKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
         const target = event.target as HTMLElement;
-        if (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) {
+        if (
+            target !== event.currentTarget &&
+            (target.isContentEditable || target.closest('a, button, input, textarea, select, [role="button"], [role="tab"]') !== null)
+        ) {
             return;
         }
 
