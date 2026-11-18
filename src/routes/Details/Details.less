@@ -94,3 +94,44 @@
         }
     }
 }
+
+
+/* Immersive detail-page atmosphere */
+.details {
+    background: #080a0f;
+
+    &::after {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        content: '';
+        pointer-events: none;
+        background: linear-gradient(180deg, rgba(7, 9, 14, 0.08) 0%, rgba(7, 9, 14, 0.18) 28%, rgba(7, 9, 14, 0.78) 72%, #080a0f 100%);
+    }
+
+    .nav-bar {
+        background: linear-gradient(180deg, rgba(7, 9, 14, 0.72), transparent);
+        backdrop-filter: blur(12px);
+    }
+
+    .content {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(216, 180, 123, 0.35) transparent;
+    }
+
+    .hero {
+        text-shadow: 0 1px 18px rgba(0, 0, 0, 0.22);
+    }
+}
+
+@media @mobile {
+    .details {
+        &::after {
+            background: linear-gradient(180deg, transparent 0%, rgba(7, 9, 14, 0.18) 18%, rgba(7, 9, 14, 0.84) 48%, #080a0f 100%);
+        }
+
+        .nav-bar {
+            background: linear-gradient(180deg, rgba(7, 9, 14, 0.6), transparent);
+        }
+    }
+}
