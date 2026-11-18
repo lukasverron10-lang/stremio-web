@@ -61,6 +61,15 @@ jobs:
         shell: pwsh
         run: |
           if ($env:WEBUI_URL -notmatch '^https://') { throw 'WEBUI_URL must be an HTTPS URL.' }
+          $webHost = ([uri]$env:WEBUI_URL).Host
+          if ([string]::IsNullOrWhiteSpace($webHost)) { throw 'WEBUI_URL must contain a valid hostname.' }
+          "STREMIO_WEBUI_HOST=$webHost" | Out-File -FilePath $env:GITHUB_ENV -Append
+          $constants = 'native-shell/src/stremio_app/constants.rs'
+          $constantsSource = Get-Content $constants -Raw
+          $hostAnchor = '    "web.stremio.com",'
+          if (-not $constantsSource.Contains($hostAnchor)) { throw 'Could not locate native shell WebUI host allowlist.' }
+          $constantsSource = $constantsSource.Replace($hostAnchor, $hostAnchor + "`r`n    env!(\"STREMIO_WEBUI_HOST\"),")
+          Set-Content -Path $constants -Value $constantsSource -NoNewline
           $main = 'native-shell/src/main.rs'
           $source = Get-Content $main -Raw
           $old = '#[clap(long, default_value = WEB_ENDPOINT, help = "Override the WebUI URL")]'
@@ -75,6 +84,7 @@ jobs:
         run: cargo build --release --target x86_64-pc-windows-msvc
         env:
           STREMIO_WEBUI_URL: ${{ env.WEBUI_URL }}
+          STREMIO_WEBUI_HOST: ${{ env.STREMIO_WEBUI_HOST }}
 
       - name: Install Inno Setup
         run: choco install innosetup --yes --no-progress
