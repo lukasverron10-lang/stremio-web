@@ -23,6 +23,26 @@ type Props = {
 const Pager = ({ className, id, labels, index, stopped, onSelect, onPrevious, onNext, onTogglePause, onCycle }: Props) => {
     const { t } = useTranslation();
 
+    const onTabKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, slide: number) => {
+        let next = slide;
+        if (event.key === 'ArrowRight') {
+            next = (slide + 1) % labels.length;
+        } else if (event.key === 'ArrowLeft') {
+            next = (slide - 1 + labels.length) % labels.length;
+        } else if (event.key === 'Home') {
+            next = 0;
+        } else if (event.key === 'End') {
+            next = labels.length - 1;
+        } else {
+            return;
+        }
+
+        event.preventDefault();
+        const tabs = event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]');
+        tabs?.[next]?.focus();
+        onSelect(next);
+    };
+
     return (
         <div className={classNames(className, styles['pager'], { [styles['stopped']]: stopped })}>
             <Button className={styles['control']} aria-label={t('BOARD_SPOTLIGHT_PREVIOUS')} onClick={onPrevious}>
@@ -34,11 +54,14 @@ const Pager = ({ className, id, labels, index, stopped, onSelect, onPrevious, on
                         <Button
                             key={slide}
                             className={classNames(styles['segment'], { [styles['on']]: slide === index })}
+                            id={`${id}-tab-${slide}`}
                             role={'tab'}
+                            tabIndex={slide === index ? 0 : -1}
                             aria-selected={slide === index}
                             aria-controls={`${id}-${slide}`}
                             aria-label={label}
                             onClick={() => onSelect(slide)}
+                            onKeyDown={(event) => onTabKeyDown(event, slide)}
                         >
                             <div className={styles['bar']}>
                                 <div className={styles['fill']} onAnimationEnd={slide === index ? onCycle : undefined} />
