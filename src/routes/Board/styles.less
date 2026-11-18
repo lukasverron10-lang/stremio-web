@@ -167,3 +167,70 @@
         }
     }
 }
+
+/* Immersive cinema presentation */
+.board-container {
+    background:
+        radial-gradient(ellipse at 72% 0%, fade(#b58a42, 8%) 0%, transparent 42%),
+        linear-gradient(180deg, #090b10 0%, #08090d 58%, #07080b 100%);
+
+    .board-content-container {
+        background: transparent;
+
+        .board-content {
+            scrollbar-color: fade(#c7a66a, 42%) transparent;
+            scrollbar-width: thin;
+            scroll-behavior: smooth;
+
+            &::-webkit-scrollbar {
+                width: 0.45rem;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background: fade(#c7a66a, 38%);
+                border-radius: 1rem;
+            }
+
+            .board-row {
+                position: relative;
+                isolation: isolate;
+                margin-top: 1.35rem;
+                margin-bottom: 2.35rem;
+            }
+
+            .board-spotlight {
+                filter: saturate(0.94);
+            }
+        }
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .board-container .board-content-container .board-content .board-row {
+        animation: cinema-row-enter 420ms ease both;
+    }
+
+    @keyframes cinema-row-enter {
+        from {
+            opacity: 0.72;
+            transform: translateY(9px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
+
+@media only screen and (max-width: @minimum) {
+    .board-container {
+        background:
+            radial-gradient(ellipse at 50% 0%, fade(#b58a42, 7%) 0%, transparent 48%),
+            #08090d;
+
+        .board-content-container .board-content .board-row {
+            margin-top: 1rem;
+            margin-bottom: 1.8rem;
+        }
+    }
+}
