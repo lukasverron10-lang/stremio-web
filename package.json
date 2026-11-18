@@ -96,8 +96,8 @@
     },
     "main": "desktop/main.cjs",
     "build": {
-        "appId": "com.onney.cinema",
-        "productName": "ONNEY Cinema",
+        "appId": "com.stremio.cinema",
+        "productName": "Stremio Cinema",
         "directories": {
             "app": "."
         },
@@ -127,8 +127,8 @@
             "allowToChangeInstallationDirectory": true,
             "createDesktopShortcut": true,
             "createStartMenuShortcut": true,
-            "shortcutName": "ONNEY Cinema",
-            "artifactName": "ONNEY-Cinema-Setup-${version}.${ext}"
+            "shortcutName": "Stremio Cinema",
+            "artifactName": "Stremio-Cinema-Setup-${version}.${ext}"
         }
     }
 }
