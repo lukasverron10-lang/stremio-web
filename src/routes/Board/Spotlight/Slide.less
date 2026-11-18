@@ -255,3 +255,53 @@
         }
     }
 }
+
+
+/* Refined cinema typography and controls */
+.slide {
+    gap: 1.1rem;
+
+    .facts .genres {
+        color: rgba(244, 238, 228, 0.82);
+        letter-spacing: 0.025em;
+    }
+
+    .description {
+        color: rgba(244, 238, 228, 0.78);
+        text-shadow: 0 1px 12px rgba(0, 0, 0, 0.42);
+    }
+
+    .actions {
+        gap: 0.85rem;
+
+        .watch {
+            min-width: 11rem;
+            justify-content: center;
+            background: linear-gradient(135deg, #e2bd82, #bd8d4e);
+            color: #17130e;
+            box-shadow: 0 0.7rem 2rem rgba(0, 0, 0, 0.24);
+
+            &:hover, &:focus {
+                filter: brightness(1.12);
+                box-shadow: 0 0.9rem 2.4rem rgba(190, 143, 77, 0.2);
+            }
+        }
+
+        .toggle, .round {
+            border: 1px solid rgba(255, 255, 255, 0.17);
+            background-color: rgba(16, 19, 25, 0.62);
+            backdrop-filter: blur(16px) saturate(1.25);
+
+            &:hover, &:focus {
+                border-color: rgba(226, 189, 130, 0.55);
+                background-color: rgba(30, 29, 27, 0.88);
+            }
+        }
+    }
+}
+
+@media @mobile {
+    .slide .description {
+        max-width: 34rem;
+    }
+}
