@@ -39,7 +39,7 @@ jobs:
         run: pnpm build
 
       - name: Install pinned Electron packaging tools
-        run: npm install --no-save --package-lock=false electron@35.7.5 electron-builder@26.0.12
+        run: npm install --no-save --package-lock=false electron@45.3.4 electron-builder@26.0.12
 
       - name: Package Windows installer
         run: npx electron-builder --win nsis --x64 --publish never
@@ -55,7 +55,7 @@ jobs:
       - name: Upload Windows installer
         uses: actions/upload-artifact@v4
         with:
-          name: ONNEY-Cinema-Windows-x64
+          name: Stremio-Cinema-Windows-x64
           path: dist/*Setup*.exe
           if-no-files-found: error
           retention-days: 14
