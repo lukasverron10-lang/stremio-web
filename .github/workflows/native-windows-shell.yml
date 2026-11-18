@@ -68,7 +68,7 @@ jobs:
           $constantsSource = Get-Content $constants -Raw
           $hostAnchor = '    "web.stremio.com",'
           if (-not $constantsSource.Contains($hostAnchor)) { throw 'Could not locate native shell WebUI host allowlist.' }
-          $constantsSource = $constantsSource.Replace($hostAnchor, $hostAnchor + "`r`n    env!(\"STREMIO_WEBUI_HOST\"),")
+          $constantsSource = $constantsSource.Replace($hostAnchor, $hostAnchor + [Environment]::NewLine + '    env!("STREMIO_WEBUI_HOST"),')
           Set-Content -Path $constants -Value $constantsSource -NoNewline
           $main = 'native-shell/src/main.rs'
           $source = Get-Content $main -Raw
@@ -84,7 +84,6 @@ jobs:
         run: cargo build --release --target x86_64-pc-windows-msvc
         env:
           STREMIO_WEBUI_URL: ${{ env.WEBUI_URL }}
-          STREMIO_WEBUI_HOST: ${{ env.STREMIO_WEBUI_HOST }}
 
       - name: Install Inno Setup
         run: choco install innosetup --yes --no-progress
