@@ -1,0 +1,30 @@
+/* ONNEY Cinema — immersive desktop visual layer.
+   The original Stremio core, routes, account state and add-on flows remain untouched. */
+:global(:root) {
+    --primary-background-color: #080a0f;
+    --secondary-background-color: #111722;
+    --primary-foreground-color: rgba(248, 247, 244, 0.96);
+    --secondary-foreground-color: #080a0f;
+    --primary-accent-color: #d7ad72;
+    --secondary-accent-color: #8da99b;
+    --tertiary-accent-color: #e8c78e;
+    --quaternary-accent-color: #7288aa;
+    --overlay-color: rgba(244, 236, 224, 0.075);
+    --modal-background-color: #11151d;
+    --outer-glow: 0 0 24px rgba(215, 173, 114, 0.16);
+    --border-radius: 0.9rem;
+    --scroll-bar-size: 5px;
+}
+:global(html), :global(body), :global(#app) {
+    background-color: #080a0f;
+}
+:global(body) {
+    background-image:
+        radial-gradient(ellipse at 78% -18%, rgba(111, 91, 68, 0.18), transparent 42%),
+        radial-gradient(ellipse at 0% 48%, rgba(42, 57, 75, 0.16), transparent 38%),
+        linear-gradient(145deg, #080a0f 0%, #0d1118 58%, #111722 100%);
+}
+:global(::selection) {
+    color: #080a0f;
+    background: #d7ad72;
+}
