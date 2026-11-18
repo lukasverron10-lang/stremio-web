@@ -36,6 +36,14 @@ jobs:
       - name: Compile Web UI
         run: pnpm build
 
+      - name: Upload compiled redesigned Web UI
+        uses: actions/upload-artifact@v4
+        with:
+          name: Stremio-Cinema-WebUI-build
+          path: build/
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Checkout official native WebView2 and MPV shell
         uses: actions/checkout@v4
         with:
