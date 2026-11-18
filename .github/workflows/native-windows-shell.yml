@@ -1,6 +1,8 @@
 name: Native Windows shell and MPV installer
 
 on:
+  push:
+    branches: [feature/cinema-immersive-windows]
   pull_request:
     branches: [development]
   workflow_dispatch:
@@ -36,6 +38,10 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Compile Web UI
         run: pnpm build
+      - name: Run Web UI tests
+        run: pnpm test --runInBand
+      - name: Lint Web UI
+        run: pnpm lint
 
       - name: Upload compiled redesigned Web UI
         uses: actions/upload-artifact@v4
@@ -78,6 +84,10 @@ jobs:
           $source = $source.Replace($old, $new)
           Set-Content -Path $main -Value $source -NoNewline
           "STREMIO_WEBUI_URL=$env:WEBUI_URL" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Check native shell formatting
+        working-directory: native-shell
+        run: cargo fmt --all -- --check
 
       - name: Compile native shell with MPV
         working-directory: native-shell
