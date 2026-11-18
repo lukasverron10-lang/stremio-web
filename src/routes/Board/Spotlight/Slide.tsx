@@ -32,7 +32,7 @@ const Slide = ({ id, item, active, onToggleLibrary }: Props) => {
     const libraryLabel = item.inLibrary ? t('REMOVE_FROM_LIB') : t('ADD_TO_LIB');
 
     return (
-        <div id={id} className={classNames(styles['slide'], { [styles['on']]: active })} role={'tabpanel'} aria-hidden={!active}>
+        <div id={id} className={classNames(styles['slide'], { [styles['on']]: active })} role={'tabpanel'} aria-labelledby={`${id.split('-').slice(0, -1).join('-')}-tab-${Number(id.split('-').pop())}`} aria-hidden={!active}>
             <Button className={styles['title']} href={detailsHref ?? undefined} title={item.name}>
                 <Logo className={styles['logo']} logo={item.logo} name={item.name} />
             </Button>
