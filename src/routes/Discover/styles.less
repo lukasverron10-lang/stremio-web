@@ -493,3 +493,63 @@
         }
     }
 }
+
+
+/* Cinema discovery layout */
+.discover-container {
+    background:
+        radial-gradient(ellipse at 82% 0%, rgba(160, 116, 61, 0.075), transparent 36%),
+        #090b10;
+
+    .discover-content {
+        .catalog-container {
+            .selectable-inputs-container {
+                padding: 1.25rem 1.75rem 1rem;
+
+                .select-input {
+                    border: 1px solid rgba(255, 255, 255, 0.075);
+                    border-radius: 0.8rem;
+                    background: rgba(22, 25, 32, 0.88);
+                    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.12);
+                    backdrop-filter: blur(14px);
+                }
+
+                .filter-container .filter-button {
+                    border: 1px solid rgba(226, 189, 130, 0.22);
+                    border-radius: 0.8rem;
+                    background: rgba(22, 25, 32, 0.9);
+                    transition: border-color 0.18s ease, background 0.18s ease;
+
+                    &:hover, &:focus {
+                        border-color: rgba(226, 189, 130, 0.65);
+                        background: rgba(46, 39, 29, 0.92);
+                    }
+                }
+            }
+
+            .meta-items-container {
+                padding: 0 1.75rem 2rem;
+                grid-gap: 0.8rem;
+            }
+
+            .preview {
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                background: rgba(16, 19, 26, 0.9);
+                box-shadow: 0 1.2rem 3rem rgba(0, 0, 0, 0.28);
+                backdrop-filter: blur(22px) saturate(1.2);
+            }
+        }
+    }
+}
+
+@media only screen and (max-width: @xsmall) {
+    .discover-container .discover-content .catalog-container {
+        .selectable-inputs-container {
+            padding: 1rem;
+        }
+
+        .meta-items-container {
+            padding: 0 1rem 1.5rem;
+        }
+    }
+}
