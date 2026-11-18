@@ -129,6 +129,7 @@ const Spotlight = ({ className, items, sentinelRef }: Props) => {
                     <Slide
                         key={item.id}
                         id={`${id}-${slide}`}
+                        tabId={`${id}-tab-${slide}`}
                         item={item}
                         active={slide === index}
                         onToggleLibrary={onToggleLibrary}
