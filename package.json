@@ -93,5 +93,42 @@
         "webpack-cli": "7.0.2",
         "webpack-dev-server": "^5.2.3",
         "workbox-webpack-plugin": "^7.4.1"
+    },
+    "main": "desktop/main.cjs",
+    "build": {
+        "appId": "com.onney.cinema",
+        "productName": "ONNEY Cinema",
+        "directories": {
+            "app": "."
+        },
+        "files": [
+            "build/**/*",
+            "desktop/**/*",
+            "package.json"
+        ],
+        "extraMetadata": {
+            "main": "desktop/main.cjs"
+        },
+        "asar": true,
+        "win": {
+            "target": [
+                {
+                    "target": "nsis",
+                    "arch": [
+                        "x64"
+                    ]
+                }
+            ],
+            "icon": "assets/favicons/icon_256x256.ico"
+        },
+        "nsis": {
+            "oneClick": false,
+            "perMachine": false,
+            "allowToChangeInstallationDirectory": true,
+            "createDesktopShortcut": true,
+            "createStartMenuShortcut": true,
+            "shortcutName": "ONNEY Cinema",
+            "artifactName": "ONNEY-Cinema-Setup-${version}.${ext}"
+        }
     }
 }
