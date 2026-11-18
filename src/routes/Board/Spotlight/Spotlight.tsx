@@ -57,6 +57,27 @@ const Spotlight = ({ className, items, sentinelRef }: Props) => {
         swipeStart.current = null;
     };
 
+    const onKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+        const target = event.target as HTMLElement;
+        if (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)) {
+            return;
+        }
+
+        if (event.key === 'ArrowRight') {
+            event.preventDefault();
+            go(index + 1, true);
+        } else if (event.key === 'ArrowLeft') {
+            event.preventDefault();
+            go(index - 1, true);
+        } else if (event.key === 'Home') {
+            event.preventDefault();
+            go(0, true);
+        } else if (event.key === 'End') {
+            event.preventDefault();
+            go(items.length - 1, true);
+        }
+    };
+
     const onToggleLibrary = (item: MetaItemPreviewCatalogsWithExtra) => {
         core.transport.dispatch({
             action: 'Ctx',
@@ -72,6 +93,8 @@ const Spotlight = ({ className, items, sentinelRef }: Props) => {
             className={classNames(className, styles['spotlight'])}
             aria-roledescription={'carousel'}
             aria-label={t('BOARD_SPOTLIGHT')}
+            tabIndex={0}
+            onKeyDown={onKeyDown}
             onFocus={pause}
             onPointerDown={onPointerDown}
             onPointerUp={onPointerUp}
