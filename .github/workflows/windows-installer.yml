@@ -1,0 +1,61 @@
+name: Windows desktop installer
+
+on:
+  push:
+    branches:
+      - feature/cinema-immersive-windows
+  pull_request:
+    branches:
+      - development
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-installer:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.8.0
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install web dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Stremio web application
+        run: pnpm build
+
+      - name: Install pinned Electron packaging tools
+        run: npm install --no-save --package-lock=false electron@35.7.5 electron-builder@26.0.12
+
+      - name: Package Windows installer
+        run: npx electron-builder --win nsis --x64 --publish never
+
+      - name: Verify installer
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem -Path dist -Filter '*Setup*.exe' -File | Select-Object -First 1
+          if (-not $installer) { throw 'Windows installer was not generated.' }
+          if ($installer.Length -lt 10MB) { throw "Installer is unexpectedly small: $($installer.Length) bytes" }
+          Get-FileHash $installer.FullName -Algorithm SHA256 | Format-List
+
+      - name: Upload Windows installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: ONNEY-Cinema-Windows-x64
+          path: dist/*Setup*.exe
+          if-no-files-found: error
+          retention-days: 14
