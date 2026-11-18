@@ -1,0 +1,96 @@
+name: Native Windows shell and MPV installer
+
+on:
+  pull_request:
+    branches: [development]
+  workflow_dispatch:
+    inputs:
+      webui_url:
+        description: HTTPS URL of the deployed Stremio Web UI to load in the native shell
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  native-windows:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    env:
+      WEBUI_URL: ${{ inputs.webui_url || 'https://web.stremio.com/' }}
+    steps:
+      - name: Checkout redesigned Web UI
+        uses: actions/checkout@v4
+
+      - name: Build redesigned Web UI
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.8.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install Web UI dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Compile Web UI
+        run: pnpm build
+
+      - name: Checkout official native WebView2 and MPV shell
+        uses: actions/checkout@v4
+        with:
+          repository: Stremio/stremio-shell-ng
+          ref: main
+          path: native-shell
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Configure native shell to load the requested Web UI
+        shell: pwsh
+        run: |
+          if ($env:WEBUI_URL -notmatch '^https://') { throw 'WEBUI_URL must be an HTTPS URL.' }
+          $main = 'native-shell/src/main.rs'
+          $source = Get-Content $main -Raw
+          $old = '#[clap(long, default_value = WEB_ENDPOINT, help = "Override the WebUI URL")]'
+          $new = '#[clap(long, default_value = env!("STREMIO_WEBUI_URL"), help = "Override the WebUI URL")]'
+          if (-not $source.Contains($old)) { throw 'Could not locate the upstream WebUI URL argument; refusing an unsafe patch.' }
+          $source = $source.Replace($old, $new)
+          Set-Content -Path $main -Value $source -NoNewline
+          "STREMIO_WEBUI_URL=$env:WEBUI_URL" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Compile native shell with MPV
+        working-directory: native-shell
+        run: cargo build --release --target x86_64-pc-windows-msvc
+        env:
+          STREMIO_WEBUI_URL: ${{ env.WEBUI_URL }}
+
+      - name: Install Inno Setup
+        run: choco install innosetup --yes --no-progress
+
+      - name: Build native Windows installer
+        shell: pwsh
+        working-directory: native-shell
+        run: |
+          $iscc = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
+          if (-not (Test-Path $iscc)) { throw 'Inno Setup compiler was not installed.' }
+          & $iscc 'setup\Stremio.iss'
+          if ($LASTEXITCODE -ne 0) { throw 'Inno Setup compilation failed.' }
+          $installer = Get-ChildItem -Path . -Filter 'StremioSetup*.exe' -File | Select-Object -First 1
+          if (-not $installer) { throw 'Native MPV installer was not produced.' }
+          if ($installer.Length -lt 30MB) { throw "Installer is unexpectedly small: $($installer.Length) bytes" }
+          Get-FileHash $installer.FullName -Algorithm SHA256 | Format-List
+
+      - name: Run native shell tests
+        working-directory: native-shell
+        run: cargo test --target x86_64-pc-windows-msvc
+
+      - name: Upload native MPV installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Stremio-Cinema-Native-Windows-x64
+          path: native-shell/StremioSetup*.exe
+          if-no-files-found: error
+          retention-days: 14
