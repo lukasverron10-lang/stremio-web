@@ -20,7 +20,7 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 60
     env:
-      WEBUI_URL: ${{ github.event.inputs.webui_url || 'https://web.stremio.com/' }}
+      WEBUI_URL: ${{ github.event.inputs.webui_url || 'https://stremio-cinema-preview-git-feature-cinema-5efd3f-platform-odyn.vercel.app/' }}
     steps:
       - name: Checkout redesigned Web UI
         uses: actions/checkout@v4
