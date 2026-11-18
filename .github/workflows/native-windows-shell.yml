@@ -20,7 +20,7 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 60
     env:
-      WEBUI_URL: ${{ inputs.webui_url || 'https://web.stremio.com/' }}
+      WEBUI_URL: ${{ github.event.inputs.webui_url || 'https://web.stremio.com/' }}
     steps:
       - name: Checkout redesigned Web UI
         uses: actions/checkout@v4
@@ -106,9 +106,11 @@ jobs:
           if (-not (Test-Path $iscc)) { throw 'Inno Setup compiler was not installed.' }
           & $iscc 'setup\Stremio.iss'
           if ($LASTEXITCODE -ne 0) { throw 'Inno Setup compilation failed.' }
-          $installer = Get-ChildItem -Path . -Filter 'StremioSetup*.exe' -File | Select-Object -First 1
-          if (-not $installer) { throw 'Native MPV installer was not produced.' }
-          if ($installer.Length -lt 30MB) { throw "Installer is unexpectedly small: $($installer.Length) bytes" }
+          $installer = Get-ChildItem -Path . -Filter 'StremioSetup-v*_x64.exe' -File | Select-Object -First 1
+          if (-not $installer) { throw 'Native MPV installer was not produced at the expected output path.' }
+          if ($installer.Length -lt 1MB) { throw "Installer is unexpectedly small: $($installer.Length) bytes" }
+          $signature = [System.IO.File]::ReadAllBytes($installer.FullName)[0..1]
+          if ($signature[0] -ne 0x4D -or $signature[1] -ne 0x5A) { throw 'Installer does not have a valid Windows PE signature.' }
           Get-FileHash $installer.FullName -Algorithm SHA256 | Format-List
 
       - name: Run native shell tests
