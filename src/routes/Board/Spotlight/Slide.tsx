@@ -17,12 +17,13 @@ import styles from './Slide.less';
 
 type Props = {
     id: string,
+    tabId: string,
     item: MetaItemPreviewCatalogsWithExtra,
     active: boolean,
     onToggleLibrary: (item: MetaItemPreviewCatalogsWithExtra) => void,
 };
 
-const Slide = ({ id, item, active, onToggleLibrary }: Props) => {
+const Slide = ({ id, tabId, item, active, onToggleLibrary }: Props) => {
     const { t } = useTranslation();
     const { groups, imdb } = useMetaLinks(item.links);
     const genres = groups.find(({ category }) => category === CONSTANTS.GENRES_LINK_CATEGORY)?.links.map(({ label }) => t(label)).join(', ') ?? null;
@@ -32,7 +33,7 @@ const Slide = ({ id, item, active, onToggleLibrary }: Props) => {
     const libraryLabel = item.inLibrary ? t('REMOVE_FROM_LIB') : t('ADD_TO_LIB');
 
     return (
-        <div id={id} className={classNames(styles['slide'], { [styles['on']]: active })} role={'tabpanel'} aria-labelledby={`${id.split('-').slice(0, -1).join('-')}-tab-${Number(id.split('-').pop())}`} aria-hidden={!active}>
+        <div id={id} className={classNames(styles['slide'], { [styles['on']]: active })} role={'tabpanel'} aria-labelledby={tabId} aria-hidden={!active}>
             <Button className={styles['title']} href={detailsHref ?? undefined} title={item.name}>
                 <Logo className={styles['logo']} logo={item.logo} name={item.name} />
             </Button>
