@@ -112,17 +112,89 @@ jobs:
           $compilerRoot = Split-Path $iscc -Parent
           $lines = $script -split "`r?`n"
           $inLanguages = $false
+          $inCustomMessages = $false
           $keptLanguages = 0
+          $unavailableLanguages = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
           $filteredLines = foreach ($line in $lines) {
-            if ($line -match '^\s*\[Languages\]\s*$') { $inLanguages = $true; $line; continue }
-            if ($inLanguages -and $line -match '^\s*\[') { $inLanguages = $false }
-            if ($inLanguages -and $line -match 'MessagesFile:\s*"compiler:([^"]+)"') {
-              $languageFile = Join-Path $compilerRoot ($Matches[1] -replace '/', '\\')
+            if ($line -match '^\s*\[Languages\]\s*          if ($keptLanguages -lt 1) { throw 'No usable Inno Setup language definitions remain.' }
+          $script = $filteredLines -join "`r`n"
+          [System.IO.File]::WriteAllText((Join-Path (Get-Location) $scriptPath), $script, [System.Text.UTF8Encoding]::new($false))
+
+          & $iscc $scriptPath
+          if ($LASTEXITCODE -ne 0) { throw 'Inno Setup compilation failed.' }
+          $installer = Get-ChildItem -Path . -Filter 'StremioSetup-v*_x64.exe' -File | Select-Object -First 1
+          if (-not $installer) { throw 'Native MPV installer was not produced at the expected output path.' }
+          if ($installer.Length -lt 1MB) { throw "Installer is unexpectedly small: $($installer.Length) bytes" }
+          $signature = [System.IO.File]::ReadAllBytes($installer.FullName)[0..1]
+          if ($signature[0] -ne 0x4D -or $signature[1] -ne 0x5A) { throw 'Installer does not have a valid Windows PE signature.' }
+          Get-FileHash $installer.FullName -Algorithm SHA256 | Format-List
+
+      - name: Run native shell tests
+        working-directory: native-shell
+        run: cargo test --target x86_64-pc-windows-msvc
+
+      - name: Upload native MPV installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Stremio-Cinema-Native-Windows-x64
+          path: native-shell/StremioSetup*.exe
+          if-no-files-found: error
+          retention-days: 14
+) {
+              $inLanguages = $true
+              $inCustomMessages = $false
+              $line
+              continue
+            }
+            if ($line -match '^\s*\[CustomMessages\]\s*          if ($keptLanguages -lt 1) { throw 'No usable Inno Setup language definitions remain.' }
+          $script = $filteredLines -join "`r`n"
+          [System.IO.File]::WriteAllText((Join-Path (Get-Location) $scriptPath), $script, [System.Text.UTF8Encoding]::new($false))
+
+          & $iscc $scriptPath
+          if ($LASTEXITCODE -ne 0) { throw 'Inno Setup compilation failed.' }
+          $installer = Get-ChildItem -Path . -Filter 'StremioSetup-v*_x64.exe' -File | Select-Object -First 1
+          if (-not $installer) { throw 'Native MPV installer was not produced at the expected output path.' }
+          if ($installer.Length -lt 1MB) { throw "Installer is unexpectedly small: $($installer.Length) bytes" }
+          $signature = [System.IO.File]::ReadAllBytes($installer.FullName)[0..1]
+          if ($signature[0] -ne 0x4D -or $signature[1] -ne 0x5A) { throw 'Installer does not have a valid Windows PE signature.' }
+          Get-FileHash $installer.FullName -Algorithm SHA256 | Format-List
+
+      - name: Run native shell tests
+        working-directory: native-shell
+        run: cargo test --target x86_64-pc-windows-msvc
+
+      - name: Upload native MPV installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Stremio-Cinema-Native-Windows-x64
+          path: native-shell/StremioSetup*.exe
+          if-no-files-found: error
+          retention-days: 14
+) {
+              $inLanguages = $false
+              $inCustomMessages = $true
+              $line
+              continue
+            }
+            if ($line -match '^\s*\[') {
+              $inLanguages = $false
+              $inCustomMessages = $false
+            }
+
+            if ($inLanguages -and $line -match '^\s*Name:\s*"([^"]+)".*MessagesFile:\s*"compiler:([^"]+)"') {
+              $languageName = $Matches[1]
+              $languageFile = Join-Path $compilerRoot ($Matches[2] -replace '/', '\\')
               if (-not (Test-Path $languageFile)) {
-                Write-Host "Skipping unavailable Inno Setup language file: $languageFile"
+                [void]$unavailableLanguages.Add($languageName)
+                Write-Host "Skipping unavailable Inno Setup language '$languageName': $languageFile"
                 continue
               }
               $keptLanguages++
+            }
+
+            if ($inCustomMessages -and $line -match '^\s*([A-Za-z0-9_]+)\.' -and $unavailableLanguages.Contains($Matches[1])) {
+              Write-Host "Skipping custom messages for unavailable language '$($Matches[1])'"
+              continue
             }
             $line
           }
