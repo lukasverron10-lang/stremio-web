@@ -104,7 +104,33 @@ jobs:
         run: |
           $iscc = 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe'
           if (-not (Test-Path $iscc)) { throw 'Inno Setup compiler was not installed.' }
-          & $iscc 'setup\Stremio.iss'
+
+          # The upstream script lists optional translations that are not shipped by every
+          # Inno Setup package. Keep every language whose .isl file is actually installed.
+          $scriptPath = 'setup\Stremio.iss'
+          $script = [System.IO.File]::ReadAllText((Join-Path (Get-Location) $scriptPath))
+          $compilerRoot = Split-Path $iscc -Parent
+          $lines = $script -split "`r?`n"
+          $inLanguages = $false
+          $keptLanguages = 0
+          $filteredLines = foreach ($line in $lines) {
+            if ($line -match '^\s*\[Languages\]\s*$') { $inLanguages = $true; $line; continue }
+            if ($inLanguages -and $line -match '^\s*\[') { $inLanguages = $false }
+            if ($inLanguages -and $line -match 'MessagesFile:\s*"compiler:([^"]+)"') {
+              $languageFile = Join-Path $compilerRoot ($Matches[1] -replace '/', '\\')
+              if (-not (Test-Path $languageFile)) {
+                Write-Host "Skipping unavailable Inno Setup language file: $languageFile"
+                continue
+              }
+              $keptLanguages++
+            }
+            $line
+          }
+          if ($keptLanguages -lt 1) { throw 'No usable Inno Setup language definitions remain.' }
+          $script = $filteredLines -join "`r`n"
+          [System.IO.File]::WriteAllText((Join-Path (Get-Location) $scriptPath), $script, [System.Text.UTF8Encoding]::new($false))
+
+          & $iscc $scriptPath
           if ($LASTEXITCODE -ne 0) { throw 'Inno Setup compilation failed.' }
           $installer = Get-ChildItem -Path . -Filter 'StremioSetup-v*_x64.exe' -File | Select-Object -First 1
           if (-not $installer) { throw 'Native MPV installer was not produced at the expected output path.' }
