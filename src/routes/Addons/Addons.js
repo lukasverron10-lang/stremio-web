@@ -118,6 +118,9 @@ const Addons = () => {
     const onInstallCommunityCatalog = React.useCallback(() => {
         setAddonDetailsTransportUrl(COMMUNITY_ADDONS_MANIFEST_URL);
     }, [setAddonDetailsTransportUrl]);
+    const onBrowseOfficialAddons = React.useCallback(() => {
+        platform.openExternal('https://addons.stremio.com/');
+    }, [platform]);
     const closeAddonDetails = React.useCallback(() => {
         setAddonDetailsTransportUrl(null);
     }, [setAddonDetailsTransportUrl]);
@@ -154,6 +157,9 @@ const Addons = () => {
                     </Button>
                     <Button className={styles['community-directory-button-container']} title={'Browse community add-ons'} onClick={onBrowseCommunityAddons}>
                         <div className={styles['community-button-label']}>Catalogue communautaire</div>
+                    </Button>
+                    <Button className={styles['community-directory-button-container']} title={'Browse official add-ons'} onClick={onBrowseOfficialAddons}>
+                        <div className={styles['community-button-label']}>Catalogue officiel</div>
                     </Button>
                     <Button className={styles['community-install-button-container']} title={'Install community add-on catalog'} onClick={onInstallCommunityCatalog}>
                         <div className={styles['community-button-label']}>Installer le catalogue</div>
