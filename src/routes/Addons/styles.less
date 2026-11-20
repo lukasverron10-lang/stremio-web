@@ -79,6 +79,16 @@
                 }
             }
 
+            .community-directory-button-container, .community-install-button-container {
+                flex: none; display: flex; align-items: center; justify-content: center;
+                height: 3rem; margin-right: 0.75rem; padding: 0 1rem;
+                border: 1px solid rgba(215, 173, 114, 0.22); border-radius: 3rem;
+                background: rgba(215, 173, 114, 0.07);
+                transition: background 180ms ease, border-color 180ms ease;
+                &:hover { border-color: rgba(215, 173, 114, 0.55); background: rgba(215, 173, 114, 0.14); }
+                .community-button-label { font-weight: 600; white-space: nowrap; }
+            }
+            .community-install-button-container { background: rgba(215, 173, 114, 0.18); border-color: rgba(215, 173, 114, 0.35); }
             .select-input-container {
                 background-color: var(--overlay-color);
                 flex-grow: 0;
@@ -277,6 +287,7 @@
                 .select-input-container {
                     display: none;
                 }
+                .community-directory-button-container, .community-install-button-container { display: none; }
 
                 .spacing {
                     display: none;

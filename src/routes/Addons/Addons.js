@@ -17,6 +17,9 @@ const useRemoteAddons = require('./useRemoteAddons');
 const useAddonDetailsTransportUrl = require('./useAddonDetailsTransportUrl');
 const useSelectableInputs = require('./useSelectableInputs');
 const styles = require('./styles');
+
+const COMMUNITY_ADDONS_DIRECTORY_URL = 'https://stremio-addons.net/';
+const COMMUNITY_ADDONS_MANIFEST_URL = 'https://stremio-addons.net/api/manifest.json';
 const { AddonPlaceholder } = require('./AddonPlaceholder');
 
 const Addons = () => {
@@ -109,6 +112,12 @@ const Addons = () => {
     const onAddonOpen = React.useCallback((event) => {
         setAddonDetailsTransportUrl(event.dataset.addon.transportUrl);
     }, [setAddonDetailsTransportUrl]);
+    const onBrowseCommunityAddons = React.useCallback(() => {
+        platform.openExternal(COMMUNITY_ADDONS_DIRECTORY_URL);
+    }, [platform]);
+    const onInstallCommunityCatalog = React.useCallback(() => {
+        setAddonDetailsTransportUrl(COMMUNITY_ADDONS_MANIFEST_URL);
+    }, [setAddonDetailsTransportUrl]);
     const closeAddonDetails = React.useCallback(() => {
         setAddonDetailsTransportUrl(null);
     }, [setAddonDetailsTransportUrl]);
@@ -142,6 +151,12 @@ const Addons = () => {
                     <Button className={styles['add-button-container']} title={t('ADD_ADDON')} onClick={openAddAddonModal}>
                         <Icon className={styles['icon']} name={'add'} />
                         <div className={styles['add-button-label']}>{t('ADD_ADDON')}</div>
+                    </Button>
+                    <Button className={styles['community-directory-button-container']} title={'Browse community add-ons'} onClick={onBrowseCommunityAddons}>
+                        <div className={styles['community-button-label']}>Catalogue communautaire</div>
+                    </Button>
+                    <Button className={styles['community-install-button-container']} title={'Install community add-on catalog'} onClick={onInstallCommunityCatalog}>
+                        <div className={styles['community-button-label']}>Installer le catalogue</div>
                     </Button>
                     <SearchBar
                         className={styles['search-bar']}
