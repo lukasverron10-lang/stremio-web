@@ -55,3 +55,25 @@
         }
     }
 }
+
+/* Keep the original navigation and focus model; restyle only its surface. */
+.vertical-nav-bar-container {
+    gap: 0.65rem;
+    padding: 1.15rem 0.6rem;
+    background: linear-gradient(90deg, rgba(9, 12, 18, 0.96), rgba(9, 12, 18, 0.78));
+    border-right: 1px solid rgba(215, 173, 114, 0.11);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    .nav-tab-button {
+        width: calc(var(--vertical-nav-bar-size) - 1.35rem);
+        height: calc(var(--vertical-nav-bar-size) - 1.1rem);
+    }
+}
+@media only screen and (max-width: @minimum) {
+    .vertical-nav-bar-container {
+        padding: 0.35rem 1rem;
+        background: rgba(9, 12, 18, 0.96);
+        border-top: 1px solid rgba(215, 173, 114, 0.12);
+        border-right: 0;
+    }
+}

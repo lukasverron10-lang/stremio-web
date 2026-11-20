@@ -19,6 +19,8 @@
     @import (once, less) '~stremio-router/styles.css';
 }
 
+@import (once, less) './cinema-theme.less';
+
 // iOS pads the bottom inset more than needed, so we deduce the actual inset size when using the webapp
 @calculated-bottom-safe-inset: ~"min(calc(env(safe-area-inset-bottom, 0rem) / var(--interface-scale)), max(1rem, calc(var(--viewport-height-diff) - var(--safe-area-inset-top))))";
 

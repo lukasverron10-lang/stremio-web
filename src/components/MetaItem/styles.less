@@ -432,3 +432,39 @@
         }
     }
 }
+
+
+/* Poster cards: restrained metallic highlight and deeper cinematic elevation. */
+.meta-item-container {
+    .poster-container {
+        border: 1px solid rgba(244, 236, 224, 0.075);
+        border-radius: calc(var(--border-radius) + 0.12rem);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+        transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+        .poster-image-layer .poster-image {
+            transition: transform 420ms cubic-bezier(0.2, 0.7, 0.2, 1), filter 220ms ease;
+        }
+    }
+    &:global(.hovered), &:focus-within, &:global(.active), &:global(.selected) {
+        .poster-container {
+            border-color: rgba(215, 173, 114, 0.72);
+            box-shadow: 0 0 0 1px rgba(215, 173, 114, 0.2), 0 18px 42px rgba(0, 0, 0, 0.38), 0 0 24px rgba(215, 173, 114, 0.11);
+            .poster-image-layer .poster-image {
+                filter: saturate(1.08) contrast(1.035);
+            }
+            .play-icon-layer .play-icon-background {
+                background-color: #d7ad72;
+            }
+        }
+    }
+    .title-bar-container .title-label {
+        color: rgba(248, 247, 244, 0.9);
+        font-weight: 600;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .meta-item-container .poster-container,
+    .meta-item-container .poster-container .poster-image-layer .poster-image {
+        transition: none;
+    }
+}

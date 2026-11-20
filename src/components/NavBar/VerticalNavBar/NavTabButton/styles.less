@@ -86,3 +86,32 @@
         }
     }
 }
+
+/* Cinema navigation states */
+.nav-tab-button-container {
+    position: relative;
+    border: 1px solid transparent;
+    transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+    .icon {
+        transition: color 180ms ease, opacity 180ms ease, transform 180ms ease;
+    }
+    .label {
+        font-size: 0.72rem;
+        letter-spacing: 0.045rem;
+        text-transform: uppercase;
+        opacity: 0.58;
+    }
+    &:global(.selected) {
+        background: linear-gradient(135deg, rgba(215, 173, 114, 0.16), rgba(215, 173, 114, 0.045));
+        border-color: rgba(215, 173, 114, 0.20);
+        box-shadow: inset 2px 0 0 #d7ad72, 0 8px 24px rgba(0, 0, 0, 0.16);
+        .icon, .label { color: #e5c18e; }
+        .icon { transform: translateY(-1px); }
+    }
+    @media (pointer: fine) {
+        &:hover {
+            border-color: rgba(215, 173, 114, 0.13);
+            background: rgba(215, 173, 114, 0.07);
+        }
+    }
+}

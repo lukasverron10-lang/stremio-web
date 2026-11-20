@@ -135,3 +135,38 @@
         transition: none;
     }
 }
+
+
+/* Cinematic hero treatment */
+.spotlight {
+    background: radial-gradient(ellipse at 72% 34%, rgba(181, 133, 71, 0.12), transparent 42%);
+
+    .art {
+        .backdrop .image {
+            filter: saturate(0.88) contrast(1.08);
+        }
+
+        .scrim {
+            background:
+                linear-gradient(90deg, rgba(7, 9, 14, 0.96) 0%, rgba(7, 9, 14, 0.82) 23%, rgba(7, 9, 14, 0.48) 46%, rgba(7, 9, 14, 0.12) 72%, transparent 100%),
+                linear-gradient(0deg, rgba(7, 9, 14, 0.92) 0%, rgba(7, 9, 14, 0.28) 34%, transparent 70%);
+        }
+    }
+
+    .pager {
+        filter: drop-shadow(0 0.4rem 1.2rem rgba(0, 0, 0, 0.45));
+    }
+}
+
+@media @mobile {
+    .spotlight .art .scrim {
+        background: linear-gradient(180deg, rgba(7, 9, 14, 0.04) 10%, rgba(7, 9, 14, 0.28) 42%, rgba(7, 9, 14, 0.94) 100%);
+    }
+}
+
+/* Keyboard focus for the carousel container */
+.spotlight:focus-visible {
+    outline: 2px solid #c7a66a;
+    outline-offset: -4px;
+    border-radius: 0.35rem;
+}

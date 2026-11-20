@@ -37,8 +37,16 @@ const Spotlight = ({ className, items, sentinelRef }: Props) => {
     const swipeStart = useRef<number | null>(null);
     const stopped = paused || isMobile || !routeActive;
 
-    const onPointerDown = (event: React.PointerEvent) => {
-        swipeStart.current = event.pointerType === 'touch' ? event.clientX : null;
+    const onPointerDown = (event: React.PointerEvent<HTMLElement>) => {
+        const target = event.target as HTMLElement;
+        const interactive = target.closest('a, button, input, textarea, select, [role="button"], [role="tab"]');
+        if (event.pointerType !== 'touch' || interactive !== null) {
+            swipeStart.current = null;
+            return;
+        }
+
+        swipeStart.current = event.clientX;
+        event.currentTarget.setPointerCapture(event.pointerId);
     };
     const onPointerUp = (event: React.PointerEvent) => {
         if (swipeStart.current === null) {
@@ -57,6 +65,30 @@ const Spotlight = ({ className, items, sentinelRef }: Props) => {
         swipeStart.current = null;
     };
 
+    const onKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+        const target = event.target as HTMLElement;
+        if (
+            target !== event.currentTarget &&
+            (target.isContentEditable || target.closest('a, button, input, textarea, select, [role="button"], [role="tab"]') !== null)
+        ) {
+            return;
+        }
+
+        if (event.key === 'ArrowRight') {
+            event.preventDefault();
+            go(index + 1, true);
+        } else if (event.key === 'ArrowLeft') {
+            event.preventDefault();
+            go(index - 1, true);
+        } else if (event.key === 'Home') {
+            event.preventDefault();
+            go(0, true);
+        } else if (event.key === 'End') {
+            event.preventDefault();
+            go(items.length - 1, true);
+        }
+    };
+
     const onToggleLibrary = (item: MetaItemPreviewCatalogsWithExtra) => {
         core.transport.dispatch({
             action: 'Ctx',
@@ -72,6 +104,8 @@ const Spotlight = ({ className, items, sentinelRef }: Props) => {
             className={classNames(className, styles['spotlight'])}
             aria-roledescription={'carousel'}
             aria-label={t('BOARD_SPOTLIGHT')}
+            tabIndex={0}
+            onKeyDown={onKeyDown}
             onFocus={pause}
             onPointerDown={onPointerDown}
             onPointerUp={onPointerUp}
@@ -95,6 +129,7 @@ const Spotlight = ({ className, items, sentinelRef }: Props) => {
                     <Slide
                         key={item.id}
                         id={`${id}-${slide}`}
+                        tabId={`${id}-tab-${slide}`}
                         item={item}
                         active={slide === index}
                         onToggleLibrary={onToggleLibrary}
